@@ -8,7 +8,7 @@
 
 <hr />
 
-<section class="row">
+<section class="row justify-content-between">
     <div class="col-md-4">
         <form method="post" asp-action="Create">
             <div class="form-group">
@@ -41,7 +41,7 @@
             <br />
             <div class="custom-file">
                 <input type="file" class="custom-file-input" style="display:none" asp-for="Poster" accept="image/*" />
-                <label class="btn btn-primary" asp-for="Poster" style="background-color:gray; border-color:gray"> Click To Choose Poster</label>
+                <label class="btn btn-primary" asp-for="Poster" style="background-color:gray; border-color:gray; font-size:small"> Click To Choose Poster</label>
                 <span asp-validation-for="Poster" class="text-danger"></span>
             </div>
             
@@ -55,4 +55,43 @@
             </a>
         </form>
     </div>
+    <div class="col-md-4">
+        <div id="poster-container" class="d-none">
+            <img src="" alt="Poster" class="img-thumbnail " />
+        </div>
+    </div>
 </section>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+    <script>
+        $(document).ready(function()
+        {
+            $('#Poster').on('change', function () {
+                var selectedFile = $(this).val().split('\\').pop();
+                $(this).siblings('Label').text(selectedFile);
+
+                var posterContainer = $('#poster-container');
+                var image = window.URL.createObjectURL(this.files[0]);
+
+                posterContainer.removeClass('d-none');
+                posterContainer.find('img').attr('src' , image);
+            });
+
+
+            $('#Year').datepicker(
+                {
+                    format: 'yyyy',
+                    viewMode: 'years',
+                    minViewMode: 'years',
+                    autoclose: true,
+                    startDate: new Date('1950-01-01'),
+                    endDate: new Date()
+                }
+            );
+        });
+    </script>
+}
