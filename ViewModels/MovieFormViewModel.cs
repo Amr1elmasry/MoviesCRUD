@@ -5,6 +5,7 @@ namespace MoviesCRUD.ViewModels
 {
     public class MovieFormViewModel
     {
+        public int Id { get; set; }
 
         [Required, StringLength(50)]
         public string? Title { get; set; }
@@ -16,8 +17,6 @@ namespace MoviesCRUD.ViewModels
 
         [Required, StringLength(2500)]
         public string? Storyline { get; set; }
-
-        [Required]
         public byte[]? Poster { get; set; }
 
         [Display(Name ="Genre")]

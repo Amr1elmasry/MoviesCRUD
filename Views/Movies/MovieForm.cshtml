@@ -4,13 +4,13 @@
     ViewData["Title"] = "Movie Form";
 }
 
-<h1>Create Movie</h1>
+<h1>@(Model.Id>0 ? "Edit ":"Create " )Movie</h1>
 
 <hr />
 
 <section class="row justify-content-between">
     <div class="col-md-4">
-        <form method="post" asp-action="Create">
+        <form method="POST" asp-action="@(Model.Id>0 ? "Edit":"Create" )" enctype="multipart/form-data">
             <div class="form-group">
                 <label class="text-muted" asp-for="Title"></label>
                 <input type="text" class="form-control" asp-for="Title" maxlength="250" />
@@ -25,12 +25,12 @@
             </div>
             <div class="form-group w-50">
                 <label class="text-muted" asp-for="Year"></label>
-                <input type="number" class="form-control" asp-for="Year" value="">
+                <input type="number" class="form-control" asp-for="Year" value="@(Model.Year > 0? Model.Year: string.Empty)">
                 <span asp-validation-for="Year" class="text-danger"></span>
             </div>
             <div class="form-group w-50">
                 <label class="text-muted" asp-for="Rate"></label>
-                <input type="number" class="form-control" asp-for="Rate" value="">
+                <input type="number" class="form-control" asp-for="Rate" value="@(Model.Rate > 0? Model.Rate: string.Empty)">
                 <span asp-validation-for="Rate" class="text-danger"></span>
             </div>
             <div class="form-group ">
@@ -40,7 +40,7 @@
             </div>
             <br />
             <div class="custom-file">
-                <input type="file" class="custom-file-input" style="display:none" asp-for="Poster" accept="image/*" />
+                <input type="file" class="custom-file-input" style="display:none" asp-for="Poster" />
                 <label class="btn btn-primary" asp-for="Poster" style="background-color:gray; border-color:gray; font-size:small"> Click To Choose Poster</label>
                 <span asp-validation-for="Poster" class="text-danger"></span>
             </div>
@@ -56,8 +56,8 @@
         </form>
     </div>
     <div class="col-md-4">
-        <div id="poster-container" class="d-none">
-            <img src="" alt="Poster" class="img-thumbnail " />
+        <div id="poster-container" class="@(Model.Id>0 ? string.Empty:"d-none" )">
+            <img src="@(Model.Id>0 ? $"data:image/*;base64,{Convert.ToBase64String(Model.Poster)}":string.Empty )" alt="Poster" class="img-thumbnail " />
         </div>
     </div>
 </section>
