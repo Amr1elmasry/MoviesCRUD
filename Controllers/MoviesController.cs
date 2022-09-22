@@ -2,23 +2,26 @@
 using Microsoft.EntityFrameworkCore;
 using MoviesCRUD.Models;
 using MoviesCRUD.ViewModels;
+using NToastNotify;
 
 namespace MoviesCRUD.Controllers
 {
     public class MoviesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IToastNotification _toastNotification;
         private List<string>_allowedExtentions = new List<string> { ".jpg", ".png" };
         private long _maxAllowedPosterSize = 1048576;
 
-        public MoviesController(ApplicationDbContext context)
+        public MoviesController(ApplicationDbContext context , IToastNotification toastNotification)
         {
             _context = context;
+            _toastNotification = toastNotification;
         }
 
         public async Task<IActionResult> Index()
         {
-            var movies = await _context.Movies.ToListAsync();
+            var movies = await _context.Movies.OrderByDescending(m=>m.Rate).ToListAsync();
             return View(movies);
         }
 
@@ -39,7 +42,6 @@ namespace MoviesCRUD.Controllers
             if (!ModelState.IsValid)
             {
                 model.Genres = await _context.Genres.OrderBy(m => m.Name).ToListAsync();
-                return View("MovieForm", model);
             }
             var files = Request.Form.Files;
             if (!files.Any())
@@ -69,7 +71,7 @@ namespace MoviesCRUD.Controllers
             var movies = new Movie
             {
                 Title = model.Title,
-                GenerId = model.GenerId,
+                GenreId = model.GenreId,
                 Year = model.Year,
                 Rate = model.Rate,
                 Storyline = model.Storyline,
@@ -78,6 +80,8 @@ namespace MoviesCRUD.Controllers
             };
             _context.Movies.Add(movies);
             _context.SaveChanges();
+
+            _toastNotification.AddSuccessToastMessage("Movie Created Successfully");
 
             return RedirectToAction(nameof(Index));
         }
@@ -97,7 +101,7 @@ namespace MoviesCRUD.Controllers
             {
                 Id = movie.Id,
                 Title = movie.Title,
-                GenerId=movie.GenerId,
+                GenreId=movie.GenreId,
                 Rate = movie.Rate,
                 Poster=movie.Poster,
                 Year = movie.Year,
@@ -153,11 +157,42 @@ namespace MoviesCRUD.Controllers
             movie.Year = model.Year;
             movie.Storyline = model.Storyline;
             movie.Rate = model.Rate;
-            movie.GenerId = model.GenerId;
+            movie.GenreId = model.GenreId;
 
             _context.SaveChanges();
+            _toastNotification.AddSuccessToastMessage("Movie Edited Successfully");
 
             return RedirectToAction(nameof(Index));
+
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return BadRequest();
+
+            var movie = await _context.Movies.Include(m=>m.Genre).SingleOrDefaultAsync(m=>m.Id == id);
+
+            if (movie == null)
+                return NotFound();
+
+            return View(movie); 
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return BadRequest();
+
+            var movie = await _context.Movies.FindAsync(id);
+
+            if (movie == null)
+                return NotFound();
+
+            _context.Movies.Remove(movie);
+            _context.SaveChanges();
+
+            return Ok();
 
         }
     }

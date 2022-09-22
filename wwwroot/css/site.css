@@ -33,3 +33,8 @@ textarea{
         background-size: 125%;
         transition: all 0.3s ease-in-out;
     }
+
+
+    .mt-60-px{
+        margin-top: 60px;
+    }

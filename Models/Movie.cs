@@ -19,7 +19,7 @@ namespace MoviesCRUD.Models
         [Required]
         public byte[]? Poster { get; set; }
 
-        public byte GenerId { get; set; }
+        public byte GenreId { get; set; }
         public Genre? Genre {get; set; }
     }
 }

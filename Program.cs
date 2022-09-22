@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MoviesCRUD.Models;
+using NToastNotify;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,13 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
     "Data Source=.;Initial Catalog=DotNetCRUD;Integrated Security=true;MultipleActiveResultsets=true;"
    ));
+builder.Services.AddMvc().AddNToastNotifyToastr(new NToastNotify.ToastrOptions()
+{
+    ProgressBar = true,
+    PositionClass = ToastPositions.TopRight,
+    PreventDuplicates = true,
+    CloseButton = true,
+});
 
 var app = builder.Build();
 
